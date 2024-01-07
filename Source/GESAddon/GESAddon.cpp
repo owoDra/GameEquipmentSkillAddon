@@ -1,20 +1,14 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+﻿// Copyright (C) 2023 owoDra
 
 #include "GESAddon.h"
 
-#define LOCTEXT_NAMESPACE "FGESAddonModule"
+IMPLEMENT_MODULE(FGESAddonModule, GESAddon)
+
 
 void FGESAddonModule::StartupModule()
 {
-	// This code will execute after your module is loaded into memory; the exact timing is specified in the .uplugin file per-module
 }
 
 void FGESAddonModule::ShutdownModule()
 {
-	// This function may be called during shutdown to clean up your module.  For modules that support dynamic reloading,
-	// we call this function before unloading the module.
 }
-
-#undef LOCTEXT_NAMESPACE
-	
-IMPLEMENT_MODULE(FGESAddonModule, GESAddon)
