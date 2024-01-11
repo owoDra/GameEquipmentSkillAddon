@@ -22,6 +22,7 @@ UAbilityCost_RechargeableSkillStock::UAbilityCost_RechargeableSkillStock(const F
 	: Super(ObjectInitializer)
 {
 	ConsumeTag = TAG_Stat_Equipment_Skill_Stock;
+	MaxStockTag = TAG_Stat_Equipment_Skill_MaxStock;
 }
 
 
@@ -111,6 +112,7 @@ void UAbilityCost_RechargeableSkillStock::OnAvatarSet(const UGAEGameplayAbility*
 		const auto MaxStockValue{ FMath::TruncToInt(MaxStockReal) };
 
 		Interface->SetStatTagStack(ConsumeTag, MaxStockValue);
+		Interface->SetStatTagStack(MaxStockTag, MaxStockValue);
 	}
 }
 

@@ -25,6 +25,7 @@ public class GESAddon : ModuleRules
                 "Engine",
                 "GameplayTags",
                 "GameplayAbilities",
+                "UMG",
             }
         );
 

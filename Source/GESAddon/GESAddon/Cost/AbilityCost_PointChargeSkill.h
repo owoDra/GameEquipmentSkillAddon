@@ -4,45 +4,49 @@
 
 #include "Cost/AbilityCost.h"
 
-#include "AbilityCost_RechargeableSkillStock.generated.h"
-
-class UEquipmentInstance;
+#include "AbilityCost_PointChargeSkill.generated.h"
 
 
 /**
- * Base AbilityCost class of rechargeable skill stock
+ * AbilityCost class, of the type that stores percentages and consumes them all at once.
  */
-UCLASS(Abstract, DefaultToInstanced, EditInlineNew)
-class GESADDON_API UAbilityCost_RechargeableSkillStock : public UAbilityCost
+UCLASS(DefaultToInstanced, EditInlineNew, meta = (DisplayName = "Cost Point Charge Skill"))
+class GESADDON_API UAbilityCost_PointChargeSkill : public UAbilityCost
 {
 	GENERATED_BODY()
 public:
-	UAbilityCost_RechargeableSkillStock(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
+	UAbilityCost_PointChargeSkill(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
 protected:
 	//
-	// Maximum number of chargeable stocks (keyed on ability level)
+	// Points required to activate skills
 	//
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Costs")
-	FScalableFloat MaxStock{ 1.0f };
+	FScalableFloat RequiedPoint{ 1.0f };
 
 	//
 	// Which tag to spend some of
 	//
-	UPROPERTY(AdvancedDisplay, BlueprintReadOnly, EditAnywhere, Category = "Costs", meta = (Categories = "Stat.Equipment.Skill"))
-	FGameplayTag ConsumeTag;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Costs", meta = (Categories = "Stat.Equipment.Skill"))
+	FGameplayTag PointTag;
 
 	//
-	// Which tag is max stock
+	// StatTag representing the required cost
 	//
-	UPROPERTY(AdvancedDisplay, BlueprintReadOnly, EditAnywhere, Category = "Costs", meta = (Categories = "Stat.Equipment.Skill"))
-	FGameplayTag MaxStockTag;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Costs", meta = (Categories = "Stat.Equipment.Skill"))
+	FGameplayTag RequiedPointTag;
 
 	//
 	// Set StatTag at initialization
 	//
 	UPROPERTY(AdvancedDisplay, BlueprintReadOnly, EditAnywhere, Category = "Costs")
 	bool InitStatOnAbilityGive{ true };
+
+	//
+	// Whether to own the required points at the time of initialization
+	//
+	UPROPERTY(AdvancedDisplay, BlueprintReadOnly, EditAnywhere, Category = "Costs")
+	bool InitialGiveEnoughPoint{ false };
 
 public:
 	virtual bool CheckCost(
@@ -62,14 +66,5 @@ public:
 		const UGAEGameplayAbility* Ability
 		, const FGameplayAbilityActorInfo* ActorInfo
 		, const FGameplayAbilitySpec& Spec) override;
-
-protected:
-	/**
-	 * Charge the number of remaining stock
-	 * 
-	 * Tips:
-	 *	Returns whether max stock is reached as the return value
-	 */
-	bool ChargeStock(UEquipmentInstance* Target, float Level);
 
 };
