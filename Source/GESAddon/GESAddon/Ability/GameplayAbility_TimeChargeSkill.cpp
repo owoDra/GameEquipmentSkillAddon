@@ -23,6 +23,7 @@ UGameplayAbility_TimeChargeSkill::UGameplayAbility_TimeChargeSkill(const FObject
 	CooltimeOverride = 5.0f;
 	CooldownTag = TAG_Ability_Cooldown_Skill;
 	CooldownMessageTag = TAG_Message_Ability_Cooldown_Skill;
+	bShouldListenToCooldownStart = true;
 	bShouldListenToCooldownEnd = true;
 
 	AbilityTags.AddTag(TAG_Ability_Type_Skill);

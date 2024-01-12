@@ -5,6 +5,9 @@
 #include "GameplayTag/GESATags_Message.h"
 #include "GameplayTag/GESATags_Stat.h"
 
+// Game Framework Core
+#include "GameplayTag/GameplayTagStackInterface.h"
+
 // Game Ability: Equipment Addon
 #include "EquipmentInstance.h"
 #include "EquipmentData.h"
@@ -18,7 +21,6 @@ UPointChargeSkillSlotWidgetBase::UPointChargeSkillSlotWidgetBase(const FObjectIn
 	ActivationMessageTag = TAG_Message_Ability_Activation_Skill;
 	StatTagStockMessageTag = TAG_Message_TagStackCountChange;
 	PointStatTag = TAG_Stat_Equipment_Skill_Point;
-	RequiredPointStatTag = TAG_Stat_Equipment_Skill_RequiredPoint;
 }
 
 
@@ -89,15 +91,12 @@ void UPointChargeSkillSlotWidgetBase::HandleStatTagStockMessage(FGameplayTag Mes
 {
 	if (EquipmentInstance.IsValid())
 	{
-		if (Message.OwningObject == EquipmentInstance)
+		if (Message.OwningObject == GetCostTarget<UObject>())
 		{
 			if (Message.Tag == PointStatTag)
 			{
 				SetPoint(Message.Count);
-			}
-			else if (Message.Tag == RequiredPointStatTag)
-			{
-				SetRequiredPoint(Message.Count);
+				SetRequiredPoint(Message.MaxCount);
 			}
 		}
 	}
@@ -117,10 +116,10 @@ void UPointChargeSkillSlotWidgetBase::SetEquipment(const UEquipmentData* Data, U
 		OnSkillIconChanged(nullptr);
 	}
 
-	if (Instance)
+	if (auto* Interface{ GetCostTarget<IGameplayTagStackInterface>() })
 	{
-		SetPoint(Instance->GetStatTagStackCount(PointStatTag));
-		SetRequiredPoint(Instance->GetStatTagStackCount(RequiredPointStatTag));
+		SetRequiredPoint(Interface->GetMaxStatTagStackCount(PointStatTag));
+		SetPoint(Interface->GetStatTagStackCount(PointStatTag));
 	}
 	else
 	{

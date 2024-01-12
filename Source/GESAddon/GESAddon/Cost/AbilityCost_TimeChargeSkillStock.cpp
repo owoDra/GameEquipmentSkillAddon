@@ -2,6 +2,7 @@
 
 #include "AbilityCost_TimeChargeSkillStock.h"
 
+#include "GameplayTag/GESATags_Stat.h"
 #include "GESAddonLogs.h"
 
 #include "GAEGameplayAbility.h"
@@ -14,33 +15,47 @@
 UAbilityCost_TimeChargeSkillStock::UAbilityCost_TimeChargeSkillStock(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
+	auto& Cost{ StatTagCosts.AddDefaulted_GetRef() };
+	Cost.StatTag = TAG_Stat_Equipment_Skill_Stock;
+	Cost.Target = EStatTagCostTarget::SourceObject;
+	Cost.Cost = 1.0f;
+	Cost.MaxValue = 3.0f;
+	Cost.DefaultValue = 3.0f;
+	Cost.bShouldInitStatTag = true;
 }
 
 void UAbilityCost_TimeChargeSkillStock::OnCooldownEnd(const UGAEGameplayAbility* Ability, const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo)
 {
-	// If EquipmentInstance is not inherited, Skip
+	// Must have authority
 
-	auto* EquipmentInstance{ Ability ? Ability->GetTypedSourceObject<UEquipmentInstance>() : nullptr };
-
-	if (!EquipmentInstance)
+	if (!ActorInfo->IsNetAuthority())
 	{
-		UE_LOG(LogGESA, Warning, TEXT("UAbilityCost_TimeChargeSkillStock::OnCooldownEnd: SourceObject in [%s] is not derived from EquipmentInstance"), *GetNameSafe(Ability));
 		return;
 	}
 
-	// Modify the number of tags
+	const auto AbilityLevel{ Ability->GetAbilityLevel(Handle, ActorInfo) };
 
-	if (auto* Interface{ Cast<IGameplayTagStackInterface>(EquipmentInstance) })
+	auto bShouldContinueCooldown{ false };
+
+	for (const auto& Cost : StatTagCosts)
 	{
-		const auto AbilityLevel{ Ability->GetAbilityLevel(Handle, ActorInfo) };
-
-		const auto bIsFull{ ChargeStock(EquipmentInstance, AbilityLevel) };
-
-		if (!bIsFull)
+		if (auto* Interface{ GetCostTarget<IGameplayTagStackInterface>(Cost.Target) })
 		{
-			auto* AbilityNonConst{ const_cast<UGAEGameplayAbility*>(Ability) };
+			const auto MaxValue{ Interface->GetMaxStatTagStackCount(Cost.StatTag) };
 
-			AbilityNonConst->CommitAbilityCooldown(Handle, ActorInfo, ActivationInfo, false);
+			const auto ChargeReal{ NumToCharge.GetValueAtLevel(AbilityLevel) };
+			const auto ChargeValue{ FMath::TruncToInt(ChargeReal) };
+			
+			const auto CurrentValue{ Interface->AddStatTagStack(Cost.StatTag, ChargeValue) };
+
+			bShouldContinueCooldown |= (MaxValue > CurrentValue);
 		}
+	}
+
+	if (bShouldContinueCooldown)
+	{
+		auto* OwnerAbility{ GetOwnerAbility() };
+
+		OwnerAbility->CommitAbilityCooldown(Handle, ActorInfo, ActivationInfo, false);
 	}
 }

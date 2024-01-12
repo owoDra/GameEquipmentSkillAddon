@@ -36,9 +36,6 @@ protected:
 	UPROPERTY(AdvancedDisplay, BlueprintReadOnly, EditAnywhere, Category = "Equipment", meta = (Categories = "Stat.Equipment.Skill"))
 	FGameplayTag PointStatTag;
 
-	UPROPERTY(AdvancedDisplay, BlueprintReadOnly, EditAnywhere, Category = "Equipment", meta = (Categories = "Stat.Equipment.Skill"))
-	FGameplayTag RequiredPointStatTag;
-
 private:
 	UPROPERTY(Transient)
 	FGameplayMessageListenerHandle ActivationMessageListenerHandle;

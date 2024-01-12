@@ -40,9 +40,6 @@ protected:
 	UPROPERTY(AdvancedDisplay, BlueprintReadOnly, EditAnywhere, Category = "Equipment", meta = (Categories = "Stat.Equipment.Skill"))
 	FGameplayTag StockStatTag;
 
-	UPROPERTY(AdvancedDisplay, BlueprintReadOnly, EditAnywhere, Category = "Equipment", meta = (Categories = "Stat.Equipment.Skill"))
-	FGameplayTag MaxStockStatTag;
-
 private:
 	UPROPERTY(Transient)
 	FGameplayMessageListenerHandle CooldownMessageListenerHandle;

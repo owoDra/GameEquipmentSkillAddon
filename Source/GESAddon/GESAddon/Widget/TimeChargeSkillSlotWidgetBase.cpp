@@ -5,6 +5,9 @@
 #include "GameplayTag/GESATags_Message.h"
 #include "GameplayTag/GESATags_Stat.h"
 
+// Game Framework Core
+#include "GameplayTag/GameplayTagStackInterface.h"
+
 // Game Ability: Equipment Addon
 #include "EquipmentInstance.h"
 #include "EquipmentData.h"
@@ -19,7 +22,6 @@ UTimeChargeSkillSlotWidgetBase::UTimeChargeSkillSlotWidgetBase(const FObjectInit
 	ActivationMessageTag = TAG_Message_Ability_Activation_Skill;
 	StatTagStockMessageTag = TAG_Message_TagStackCountChange;
 	StockStatTag = TAG_Stat_Equipment_Skill_Stock;
-	MaxStockStatTag = TAG_Stat_Equipment_Skill_MaxStock;
 }
 
 
@@ -111,15 +113,12 @@ void UTimeChargeSkillSlotWidgetBase::HandleStatTagStockMessage(FGameplayTag Mess
 {
 	if (EquipmentInstance.IsValid())
 	{
-		if (Message.OwningObject == EquipmentInstance)
+		if (Message.OwningObject == GetCostTarget<UObject>())
 		{
 			if (Message.Tag == StockStatTag)
 			{
 				SetStock(Message.Count);
-			}
-			else if (Message.Tag == MaxStockStatTag)
-			{
-				SetMaxStock(Message.Count);
+				SetMaxStock(Message.MaxCount);
 			}
 		}
 	}
@@ -139,11 +138,11 @@ void UTimeChargeSkillSlotWidgetBase::SetEquipment(const UEquipmentData* Data, UE
 		OnSkillIconChanged(nullptr);
 	}
 
-	if (Instance)
+	if (auto* Interface{ GetCostTarget<IGameplayTagStackInterface>() })
 	{
 		SetCooltime(0.0f);
-		SetMaxStock(Instance->GetStatTagStackCount(MaxStockStatTag));
-		SetStock(Instance->GetStatTagStackCount(StockStatTag));
+		SetMaxStock(Interface->GetMaxStatTagStackCount(StockStatTag));
+		SetStock(Interface->GetStatTagStackCount(StockStatTag));
 	}
 	else
 	{
