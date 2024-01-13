@@ -2,7 +2,6 @@
 
 #include "GameplayAbility_TimeChargeSkill.h"
 
-#include "GameplayTag/GESATags_Ability.h"
 #include "GameplayTag/GESATags_Message.h"
 
 #include "GameplayTag/GAETags_Ability.h"
@@ -21,10 +20,8 @@ UGameplayAbility_TimeChargeSkill::UGameplayAbility_TimeChargeSkill(const FObject
 	ActivationMessageTag = TAG_Message_Ability_Activation_Skill;
 
 	CooltimeOverride = 5.0f;
-	CooldownTag = TAG_Ability_Cooldown_Skill;
 	CooldownMessageTag = TAG_Message_Ability_Cooldown_Skill;
-	bShouldListenToCooldownStart = true;
-	bShouldListenToCooldownEnd = true;
+	bUseCooldown = true;
 
 	AbilityTags.AddTag(TAG_Ability_Type_Skill);
 }

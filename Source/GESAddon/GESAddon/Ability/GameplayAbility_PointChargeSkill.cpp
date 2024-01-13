@@ -2,7 +2,6 @@
 
 #include "GameplayAbility_PointChargeSkill.h"
 
-#include "GameplayTag/GESATags_Ability.h"
 #include "GameplayTag/GESATags_Message.h"
 
 #include "GameplayTag/GAETags_Ability.h"
@@ -21,9 +20,8 @@ UGameplayAbility_PointChargeSkill::UGameplayAbility_PointChargeSkill(const FObje
 	ActivationMessageTag = TAG_Message_Ability_Activation_Skill;
 
 	CooltimeOverride = 0.0f;
-	CooldownTag = FGameplayTag::EmptyTag;
 	CooldownMessageTag = FGameplayTag::EmptyTag;
-	bShouldListenToCooldownEnd = false;
+	bUseCooldown = false;
 
 	AbilityTags.AddTag(TAG_Ability_Type_Skill);
 }
